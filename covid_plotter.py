@@ -27,8 +27,9 @@ def parse_command_line():
 
     parser = argparse.ArgumentParser(description='Command line arguments')
     parser.add_argument('--country', action='store', default='US', required=False, help='Country to gather data.  Default is US')
-    parser.add_argument('--min_day', type=int, action='store', default=None, required=False, help='Minimum day.  Default is 0')
-    parser.add_argument('--type', action='store', required=True, help='The plot to generate from the data')
+    parser.add_argument('--min_day', type=int, action='store', default=None, required=False, help='Minimum day.  Default is from the start of the data')
+    parser.add_argument('--max_day', type=int, action='store', default=None, required=False, help='Minimum day.  Default is to the end of the data')
+    #parser.add_argument('--type', action='store', required=True, help='The plot to generate from the data')
     parser.add_argument('--data', action='store', default=default_data, required=False, help='Path to the JHU data')
 
     return parser.parse_args()
@@ -84,7 +85,7 @@ def collect_data(path):
         print("Exception thrown while parsing data: {}".format(e))
         sys.exit(-1)
 
-def get_cumulative_data_by_country(country, data):
+def get_cumulative_data_by_country(country, data, min_day, max_day):
 
     results = []
     for datum in data:
@@ -97,7 +98,9 @@ def get_cumulative_data_by_country(country, data):
                 total_deaths += entry[Deaths]
                 total_recovered += entry[Recovered]
 
-        results.append((datum.date, total_confirmed, total_deaths, total_recovered))
+        if min_day is None or datum.date.days >= min_day:
+            if max_day is None or datum.date.days <= max_day:
+                results.append((datum.date, total_confirmed, total_deaths, total_recovered))
 
     return results
 
@@ -105,18 +108,17 @@ def get_cumulative_data_by_country(country, data):
 def get_cumulative_data_by_province(country, data):
     pass
 
-def plot_data(title, data, min_day, max_day):
+def plot_data(title, data):
     date = []
     confirmed = []
     deaths = []
     recovered = []
 
     for datum in data:
-        if not min_day or datum[0].days >=  min_day:
-            date.append(datum[0].days)
-            confirmed.append(datum[1])
-            deaths.append(datum[2])
-            recovered.append(datum[3])
+        date.append(datum[0].days)
+        confirmed.append(datum[1])
+        deaths.append(datum[2])
+        recovered.append(datum[3])
 
     dataset = {'Date' : date, 'Confirmed' : confirmed, 'Deaths' : deaths, 'Recovered' : recovered}
 
@@ -126,6 +128,18 @@ def plot_data(title, data, min_day, max_day):
     plt.title(title)
     plt.legend()
     plt.show()
+
+def get_title(country, min_day, max_day):
+    title = "Total {} Cases".format(country)
+    if min_day and max_day:
+        pass
+    elif min_day:
+        pass
+    elif max_day:
+        pass
+
+    return title
+
 
 if __name__ == '__main__':
     print("""\
@@ -138,5 +152,5 @@ To get the JHU data clone https://github.com/CSSEGISandData/COVID-19
     print("The parsed arguments are:\n{}".format(args))
     print("Collecting data")
     covid_data = collect_data(args.data)
-    country_data = get_cumulative_data_by_country(args.country, covid_data)
-    plot_data(args.country, country_data, args.min_day, None)
+    country_data = get_cumulative_data_by_country(args.country, covid_data, args.min_day, args.max_day)
+    plot_data(get_title(args.country, args.min_day, args.max_day ), country_data)
