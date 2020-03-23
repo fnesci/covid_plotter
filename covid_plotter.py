@@ -26,6 +26,8 @@ def parse_command_line():
     default_data = os.path.join(os.path.dirname(__file__), 'COVID-19')
 
     parser = argparse.ArgumentParser(description='Command line arguments')
+    parser.add_argument('--country', action='store', default='US', required=False, help='Country to gather data.  Default is US')
+    parser.add_argument('--min_day', type=int, action='store', default=None, required=False, help='Minimum day.  Default is 0')
     parser.add_argument('--type', action='store', required=True, help='The plot to generate from the data')
     parser.add_argument('--data', action='store', default=default_data, required=False, help='Path to the JHU data')
 
@@ -65,7 +67,7 @@ def parse_data_file(filename, country_name_map):
 
 def collect_data(path):
     try:
-        country_name_map = {'Mainland China': 'China'}
+        country_name_map = {'Mainland China': 'China', 'Taiwan*': 'Taiwan'}
         file_pattern = os.path.join(path, 'csse_covid_19_data/csse_covid_19_daily_reports/*.csv')
         #print(file_pattern)
         data_files = glob.glob(file_pattern)
@@ -103,23 +105,25 @@ def get_cumulative_data_by_country(country, data):
 def get_cumulative_data_by_province(country, data):
     pass
 
-def plot_data(data):
+def plot_data(title, data, min_day, max_day):
     date = []
     confirmed = []
     deaths = []
     recovered = []
 
     for datum in data:
-        date.append(datum[0].days)
-        confirmed.append(datum[1])
-        deaths.append(datum[2])
-        recovered.append(datum[3])
+        if not min_day or datum[0].days >=  min_day:
+            date.append(datum[0].days)
+            confirmed.append(datum[1])
+            deaths.append(datum[2])
+            recovered.append(datum[3])
 
     dataset = {'Date' : date, 'Confirmed' : confirmed, 'Deaths' : deaths, 'Recovered' : recovered}
 
     plt.plot('Date', 'Confirmed', data=dataset, marker='o', label='Confirmed')
     plt.plot('Date', 'Deaths', data=dataset, marker='x', label='Deaths')
     plt.plot('Date', 'Recovered', data=dataset, marker='+', label='Recovered')
+    plt.title(title)
     plt.legend()
     plt.show()
 
@@ -134,5 +138,5 @@ To get the JHU data clone https://github.com/CSSEGISandData/COVID-19
     print("The parsed arguments are:\n{}".format(args))
     print("Collecting data")
     covid_data = collect_data(args.data)
-    country_data = get_cumulative_data_by_country('China', covid_data)
-    plot_data(country_data)
+    country_data = get_cumulative_data_by_country(args.country, covid_data)
+    plot_data(args.country, country_data, args.min_day, None)

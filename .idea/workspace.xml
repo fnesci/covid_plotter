@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="30c1b28a-503f-40d0-823a-74e8aa04fb43" name="Default Changelist" comment="" />
+    <list default="true" id="30c1b28a-503f-40d0-823a-74e8aa04fb43" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/covid_plotter.py" beforeDir="false" afterPath="$PROJECT_DIR$/covid_plotter.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -15,7 +19,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/COVID-19" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1ZUCSBHnUvMMrnxsPHpxwQprbvn" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -26,7 +30,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="RunManager">
     <configuration name="covid_plotter" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -42,7 +46,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/covid_plotter.py" />
-      <option name="PARAMETERS" value="--type=us" />
+      <option name="PARAMETERS" value="--type=us --data=COVID-19 --min_day=30" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -69,59 +73,64 @@
     </task>
     <servers />
   </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/covid_plotter" />
+    </ignored-roots>
+  </component>
   <component name="WindowStateProjectService">
     <state x="872" y="378" key="#Inspections" timestamp="1584885200550">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
     <state x="872" y="378" key="#Inspections/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584885200550" />
-    <state x="734" y="375" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1584886309126">
+    <state x="734" y="375" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1584984930556">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state x="734" y="375" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584886309126" />
+    <state x="734" y="375" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584984930556" />
     <state width="1728" height="466" key="DebuggerActiveHint" timestamp="1584899362163">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
     <state width="1728" height="466" key="DebuggerActiveHint/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584899362163" />
-    <state width="2539" height="507" key="GridCell.Tab.0.bottom" timestamp="1584902003928">
+    <state width="2539" height="507" key="GridCell.Tab.0.bottom" timestamp="1584985082974">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="2539" height="507" key="GridCell.Tab.0.bottom/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584902003928" />
-    <state width="2539" height="507" key="GridCell.Tab.0.center" timestamp="1584902003928">
+    <state width="2539" height="507" key="GridCell.Tab.0.bottom/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584985082974" />
+    <state width="2539" height="507" key="GridCell.Tab.0.center" timestamp="1584985082974">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="2539" height="507" key="GridCell.Tab.0.center/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584902003928" />
-    <state width="2539" height="507" key="GridCell.Tab.0.left" timestamp="1584902003928">
+    <state width="2539" height="507" key="GridCell.Tab.0.center/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584985082974" />
+    <state width="2539" height="507" key="GridCell.Tab.0.left" timestamp="1584985082974">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="2539" height="507" key="GridCell.Tab.0.left/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584902003928" />
-    <state width="2539" height="507" key="GridCell.Tab.0.right" timestamp="1584902003928">
+    <state width="2539" height="507" key="GridCell.Tab.0.left/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584985082974" />
+    <state width="2539" height="507" key="GridCell.Tab.0.right" timestamp="1584985082974">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="2539" height="507" key="GridCell.Tab.0.right/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584902003928" />
-    <state width="2539" height="507" key="GridCell.Tab.1.bottom" timestamp="1584902003867">
+    <state width="2539" height="507" key="GridCell.Tab.0.right/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584985082974" />
+    <state width="2539" height="507" key="GridCell.Tab.1.bottom" timestamp="1584985082975">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="2539" height="507" key="GridCell.Tab.1.bottom/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584902003867" />
-    <state width="2539" height="507" key="GridCell.Tab.1.center" timestamp="1584902003866">
+    <state width="2539" height="507" key="GridCell.Tab.1.bottom/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584985082975" />
+    <state width="2539" height="507" key="GridCell.Tab.1.center" timestamp="1584985082974">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="2539" height="507" key="GridCell.Tab.1.center/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584902003866" />
-    <state width="2539" height="507" key="GridCell.Tab.1.left" timestamp="1584902003866">
+    <state width="2539" height="507" key="GridCell.Tab.1.center/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584985082974" />
+    <state width="2539" height="507" key="GridCell.Tab.1.left" timestamp="1584985082974">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="2539" height="507" key="GridCell.Tab.1.left/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584902003866" />
-    <state width="2539" height="507" key="GridCell.Tab.1.right" timestamp="1584902003867">
+    <state width="2539" height="507" key="GridCell.Tab.1.left/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584985082974" />
+    <state width="2539" height="507" key="GridCell.Tab.1.right" timestamp="1584985082974">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="2539" height="507" key="GridCell.Tab.1.right/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584902003867" />
-    <state x="781" y="362" key="SettingsEditor" timestamp="1584892800241">
+    <state width="2539" height="507" key="GridCell.Tab.1.right/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584985082974" />
+    <state x="781" y="362" key="SettingsEditor" timestamp="1584985081293">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state x="781" y="362" key="SettingsEditor/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584892800241" />
-    <state x="976" y="544" key="com.intellij.ide.util.TipDialog" timestamp="1584894576389">
+    <state x="781" y="362" key="SettingsEditor/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584985081293" />
+    <state x="976" y="544" key="com.intellij.ide.util.TipDialog" timestamp="1584983957914">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state x="976" y="544" key="com.intellij.ide.util.TipDialog/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584894576389" />
+    <state x="976" y="544" key="com.intellij.ide.util.TipDialog/0.0.2560.1440/2560.0.1920.1200@0.0.2560.1440" timestamp="1584983957914" />
     <state x="1021" y="363" key="refactoring.ChangeSignatureDialog" timestamp="1584890349643">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
