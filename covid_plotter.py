@@ -8,18 +8,72 @@ import matplotlib.pyplot as plt
 #import numpy as np
 import os
 import sys
+import traceback
+
 
 DateTimeTupleMaker = collections.namedtuple('DateTimeTuple', 'iso days')
 FileDataTupleMaker = collections.namedtuple('FileDataTuple', 'date data')
 DateTimeEpoch = datetime.datetime(2020, 1, 22)
 
-# Indexes into data
+
+def get_row_data(schema, country_name_map, row):
+    return [
+        row[schema.Province],
+        country_name_map.get(row[schema.Country], row[schema.Country]),
+        row[schema.LastUpdate],
+        int(row[schema.Confirmed]) if len(row[schema.Confirmed]) > 0 else 0,
+        int(row[schema.Deaths]) if len(row[schema.Deaths]) > 0 else 0,
+        int(row[schema.Recovered]) if len(row[schema.Recovered]) > 0 else 0,
+    ]
+
+
+class Schema0:
+    Header = 'Province/State,Country/Region,Last Update,Confirmed,Deaths,Recovered'
+
+    # Indexes into data
+    Province = 0
+    Country = 1
+    LastUpdate = 2
+    Confirmed = 3
+    Deaths = 4
+    Recovered = 5
+    Active = -1
+
+class Schema1:
+    Header = 'Province/State,Country/Region,Last Update,Confirmed,Deaths,Recovered,Latitude,Longitude'
+
+    # Indexes into data
+    Province = 0
+    Country = 1
+    LastUpdate = 2
+    Confirmed = 3
+    Deaths = 4
+    Recovered = 5
+    Active = -1
+
+class Schema2:
+    Header = 'FIPS,Admin2,Province_State,Country_Region,Last_Update,Lat,Long_,Confirmed,Deaths,Recovered,Active,Combined_Key'
+
+    # Indexes into data
+    Province = 2
+    Country = 3
+    LastUpdate = 4
+    Confirmed = 7
+    Deaths = 8
+    Recovered = 9
+    Active = 10
+
+
+Schemas = {Schema0.Header: Schema0, Schema1.Header: Schema1, Schema2.Header: Schema2}
+
+
 Province = 0
 Country = 1
 LastUpdate = 2
 Confirmed = 3
 Deaths = 4
 Recovered = 5
+Active = 6
 
 
 def parse_command_line():
@@ -28,7 +82,8 @@ def parse_command_line():
     parser = argparse.ArgumentParser(description='Command line arguments')
     parser.add_argument('--country', action='store', default='US', required=False, help='Country to gather data.  Default is US')
     parser.add_argument('--min_day', type=int, action='store', default=None, required=False, help='Minimum day.  Default is from the start of the data')
-    parser.add_argument('--max_day', type=int, action='store', default=None, required=False, help='Minimum day.  Default is to the end of the data')
+    parser.add_argument('--max_day', type=int, action='store', default=None, required=False, help='Maximum day.  Default is to the end of the data')
+    #parser.add_argument('--states', type=bool, action='store_true', default=False, required=False, help='Show states/provinces instead of total country data')
     #parser.add_argument('--type', action='store', required=True, help='The plot to generate from the data')
     parser.add_argument('--data', action='store', default=default_data, required=False, help='Path to the JHU data')
 
@@ -55,13 +110,22 @@ def parse_data_file(filename, country_name_map):
         data_reader = csv.reader(file, delimiter=',')
         first_row = True
         data = []
+        schemaInfo = None
         for row in data_reader:
-            if not first_row:
-                row[Country] = country_name_map.get(row[Country], row[Country])
-                row[Confirmed] = int(row[Confirmed]) if len(row[Confirmed]) > 0 else 0
-                row[Recovered] = int(row[Recovered]) if len(row[Recovered]) > 0 else 0
-                row[Deaths] = int(row[Deaths]) if len(row[Deaths]) > 0 else 0
-                data.append(row)
+            if first_row:
+                schema_string = ','.join(row)
+                if schema_string == Schema2.Header:
+                    pass
+                if schema_string[0] == '\xef':
+                    # Strip the BOM
+                    schema_string = schema_string[3:]
+                schema = Schemas[schema_string]
+            else:
+                try:
+                    row = get_row_data(schema, country_name_map, row)
+                    data.append(row)
+                except:
+                    raise
             first_row = False
 
         return FileDataTupleMaker(file_time, data)
@@ -82,6 +146,7 @@ def collect_data(path):
         return all_data
 
     except Exception as e:
+        traceback.print_exc()
         print("Exception thrown while parsing data: {}".format(e))
         sys.exit(-1)
 
@@ -147,6 +212,7 @@ COVID-19 data plotter
 By default this program assumes the the JHU data is checked out at the same level as this file
 To get the JHU data clone https://github.com/CSSEGISandData/COVID-19
 """)
+    sys.stdout.flush()
 
     args = parse_command_line()
     print("The parsed arguments are:\n{}".format(args))
