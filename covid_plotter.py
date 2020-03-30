@@ -24,6 +24,8 @@ def get_row_data(schema, country_name_map, row):
         int(row[schema.Confirmed]) if len(row[schema.Confirmed]) > 0 else 0,
         int(row[schema.Deaths]) if len(row[schema.Deaths]) > 0 else 0,
         int(row[schema.Recovered]) if len(row[schema.Recovered]) > 0 else 0,
+        row[0],
+        row[schema.Local] if schema.Local >= 0 else '',
     ]
 
 
@@ -38,6 +40,7 @@ class Schema0:
     Deaths = 4
     Recovered = 5
     Active = -1
+    Local = -1
 
 class Schema1:
     Header = 'Province/State,Country/Region,Last Update,Confirmed,Deaths,Recovered,Latitude,Longitude'
@@ -50,11 +53,13 @@ class Schema1:
     Deaths = 4
     Recovered = 5
     Active = -1
+    Local = -1
 
 class Schema2:
     Header = 'FIPS,Admin2,Province_State,Country_Region,Last_Update,Lat,Long_,Confirmed,Deaths,Recovered,Active,Combined_Key'
 
     # Indexes into data
+    Local = 1
     Province = 2
     Country = 3
     LastUpdate = 4
@@ -74,6 +79,7 @@ Confirmed = 3
 Deaths = 4
 Recovered = 5
 Active = 6
+Local = 7
 
 
 def parse_command_line():
@@ -83,8 +89,8 @@ def parse_command_line():
     parser.add_argument('--country', action='store', default='US', required=False, help='Country to gather data.  Default is US')
     parser.add_argument('--min_day', type=int, action='store', default=None, required=False, help='Minimum day.  Default is from the start of the data')
     parser.add_argument('--max_day', type=int, action='store', default=None, required=False, help='Maximum day.  Default is to the end of the data')
-    #parser.add_argument('--states', type=bool, action='store_true', default=False, required=False, help='Show states/provinces instead of total country data')
-    #parser.add_argument('--type', action='store', required=True, help='The plot to generate from the data')
+    parser.add_argument('--province', action='store', default='Maryland', required=False, help='State/Province to gather data.  Default is MD')
+    parser.add_argument('--local', action='store', default='Montgomery', required=False, help='County to gather data.  Default is Montgomery')
     parser.add_argument('--data', action='store', default=default_data, required=False, help='Path to the JHU data')
 
     return parser.parse_args()
@@ -170,8 +176,41 @@ def get_cumulative_data_by_country(country, data, min_day, max_day):
     return results
 
 
-def get_cumulative_data_by_province(country, data):
-    pass
+def get_cumulative_data_by_province(country, province, data, min_day, max_day):
+    results = []
+    for datum in data:
+        total_confirmed = 0
+        total_deaths = 0
+        total_recovered = 0
+        for entry in datum.data:
+            if entry[Country] == country and entry[Province] == province:
+                total_confirmed += entry[Confirmed]
+                total_deaths += entry[Deaths]
+                total_recovered += entry[Recovered]
+
+        if min_day is None or datum.date.days >= min_day:
+            if max_day is None or datum.date.days <= max_day:
+                results.append((datum.date, total_confirmed, total_deaths, total_recovered))
+
+    return results
+	
+def get_cumulative_data_by_local(country, province, local, data, min_day, max_day):
+    results = []
+    for datum in data:
+        total_confirmed = 0
+        total_deaths = 0
+        total_recovered = 0
+        for entry in datum.data:
+            if entry[Country] == country and entry[Province] == province and entry[Local] == local:
+                total_confirmed += entry[Confirmed]
+                total_deaths += entry[Deaths]
+                total_recovered += entry[Recovered]
+
+        if min_day is None or datum.date.days >= min_day:
+            if max_day is None or datum.date.days <= max_day:
+                results.append((datum.date, total_confirmed, total_deaths, total_recovered))
+
+    return results
 
 def plot_data(title, data):
     date = []
@@ -183,19 +222,36 @@ def plot_data(title, data):
         date.append(datum[0].days)
         confirmed.append(datum[1])
         deaths.append(datum[2])
-        recovered.append(datum[3])
+        recovered.append(datum[3])    
 
     dataset = {'Date' : date, 'Confirmed' : confirmed, 'Deaths' : deaths, 'Recovered' : recovered}
 
-    plt.plot('Date', 'Confirmed', data=dataset, marker='o', label='Confirmed')
-    plt.plot('Date', 'Deaths', data=dataset, marker='x', label='Deaths')
-    plt.plot('Date', 'Recovered', data=dataset, marker='+', label='Recovered')
-    plt.title(title)
-    plt.legend()
+    fig, axs = plt.subplots(2)
+    fig.suptitle(title, fontsize=16)
+
+    axs[0].plot('Date', 'Confirmed', data=dataset, marker='o', label='Confirmed')
+    axs[0].plot('Date', 'Deaths', data=dataset, marker='x', label='Deaths')
+    axs[0].plot('Date', 'Recovered', data=dataset, marker='+', label='Recovered')
+    axs[0].set_title('Total')
+    axs[0].legend()
+
+    # convert to cases per day from aggregate data (subtract from previous day)
+    casesperday = [y-x for x, y in zip(confirmed, confirmed[1:])]
+    deathsperday = [y-x for x, y in zip(deaths, deaths[1:])]
+    recoveredperday = [y-x for x, y in zip(recovered, recovered[1:])]
+
+    dataset = {'Date' : date[1:], 'Confirmed' : casesperday, 'Deaths' : deathsperday, 'Recovered' : recoveredperday}
+
+    axs[1].plot('Date', 'Confirmed', data=dataset, marker='o', label='Confirmed')
+    axs[1].plot('Date', 'Deaths', data=dataset, marker='x', label='Deaths')
+    axs[1].plot('Date', 'Recovered', data=dataset, marker='+', label='Recovered')
+    axs[1].set_title('Daily')
+    axs[1].legend()
+    
     plt.show()
 
 def get_title(country, min_day, max_day):
-    title = "Total {} Cases".format(country)
+    title = "{} Cases".format(country)
     if min_day and max_day:
         pass
     elif min_day:
@@ -220,3 +276,7 @@ To get the JHU data clone https://github.com/CSSEGISandData/COVID-19
     covid_data = collect_data(args.data)
     country_data = get_cumulative_data_by_country(args.country, covid_data, args.min_day, args.max_day)
     plot_data(get_title(args.country, args.min_day, args.max_day ), country_data)
+    province_data = get_cumulative_data_by_province(args.country, args.province, covid_data, args.min_day, args.max_day)
+    plot_data(get_title(args.province, args.min_day, args.max_day ), province_data)
+    local_data = get_cumulative_data_by_local(args.country, args.province, args.local, covid_data, args.min_day, args.max_day)
+    plot_data(get_title(args.local, args.min_day, args.max_day ), local_data)
