@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import os
 import sys
 import traceback
+import numpy as np
 
 
 DateTimeTupleMaker = collections.namedtuple('DateTimeTuple', 'iso days')
@@ -92,6 +93,7 @@ def parse_command_line():
     parser.add_argument('--province', action='store', default='Maryland', required=False, help='State/Province to gather data.  Default is MD')
     parser.add_argument('--local', action='store', default='Montgomery', required=False, help='County to gather data.  Default is Montgomery')
     parser.add_argument('--data', action='store', default=default_data, required=False, help='Path to the JHU data')
+    parser.add_argument('--average', type=int, action='store', default=7, required=False, help='Running average # of days')
 
     return parser.parse_args()
 
@@ -212,7 +214,7 @@ def get_cumulative_data_by_local(country, province, local, data, min_day, max_da
 
     return results
 
-def plot_data(title, data):
+def plot_data(title, data, averagedays):
     date = []
     confirmed = []
     deaths = []
@@ -226,7 +228,8 @@ def plot_data(title, data):
 
     dataset = {'Date' : date, 'Confirmed' : confirmed, 'Deaths' : deaths, 'Recovered' : recovered}
 
-    fig, axs = plt.subplots(2)
+    fig, axs = plt.subplots(3)
+    
     fig.suptitle(title, fontsize=16)
 
     axs[0].plot('Date', 'Confirmed', data=dataset, marker='o', label='Confirmed')
@@ -247,7 +250,21 @@ def plot_data(title, data):
     axs[1].plot('Date', 'Recovered', data=dataset, marker='+', label='Recovered')
     axs[1].set_title('Daily')
     axs[1].legend()
+
+    # convert to a running average for daily cases
+    casesperdayaverage = np.convolve(casesperday, np.ones((averagedays,))/averagedays, mode='valid')
+    deathsperdayaverage = np.convolve(deathsperday, np.ones((averagedays,))/averagedays, mode='valid')
+    recoveredperdayaverage = np.convolve(recoveredperday, np.ones((averagedays,))/averagedays, mode='valid')
+
+    dataset = {'Date' : date[averagedays:], 'Confirmed' : casesperdayaverage, 'Deaths' : deathsperdayaverage, 'Recovered' : recoveredperdayaverage}
+
+    axs[2].plot('Date', 'Confirmed', data=dataset, marker='o', label='Confirmed')
+    axs[2].plot('Date', 'Deaths', data=dataset, marker='x', label='Deaths')
+    axs[2].plot('Date', 'Recovered', data=dataset, marker='+', label='Recovered')
+    axs[2].set_title('Daily Averaged (N='+ str(averagedays) + ')')
+    axs[2].legend()
     
+    plt.subplots_adjust(hspace=0.5)
     plt.show()
 
 def get_title(country, min_day, max_day):
@@ -275,8 +292,8 @@ To get the JHU data clone https://github.com/CSSEGISandData/COVID-19
     print("Collecting data")
     covid_data = collect_data(args.data)
     country_data = get_cumulative_data_by_country(args.country, covid_data, args.min_day, args.max_day)
-    plot_data(get_title(args.country, args.min_day, args.max_day ), country_data)
+    plot_data(get_title(args.country, args.min_day, args.max_day ), country_data, args.average)
     province_data = get_cumulative_data_by_province(args.country, args.province, covid_data, args.min_day, args.max_day)
-    plot_data(get_title(args.province, args.min_day, args.max_day ), province_data)
+    plot_data(get_title(args.province, args.min_day, args.max_day ), province_data, args.average)
     local_data = get_cumulative_data_by_local(args.country, args.province, args.local, covid_data, args.min_day, args.max_day)
-    plot_data(get_title(args.local, args.min_day, args.max_day ), local_data)
+    plot_data(get_title(args.local, args.min_day, args.max_day ), local_data, args.average)
